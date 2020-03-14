@@ -120,6 +120,32 @@ function viewRoles() {
   });
 }
 
+function addDepartment() {
+  connection.query("SELECT * FROM departments", function(err, res) {
+    let departmentArray = [];
+    for (var i = 0; i < res.length; i++) {
+      departmentArray.push(res[i].name);
+    }
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "What is this new department called?",
+          name: "newDept"
+        }
+      ])
+      .then(function(res) {
+        connection.query(
+          "INSERT INTO departments (name) VALUES (?)",
+          [res.newDept],
+          function(err, res) {
+            mainMenu();
+          }
+        );
+      });
+  });
+}
+
 function quit() {
   console.log("See you next time");
   connection.end();

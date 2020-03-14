@@ -93,6 +93,7 @@ function menu(option) {
   }
 }
 
+// View queries
 function viewEmployees() {
   connection.query("SELECT * FROM employees", function(err, res) {
     if (err) throw err;
@@ -117,6 +118,7 @@ function viewRoles() {
   });
 }
 
+// Add queries
 function addEmployee() {
   inquirer
     .prompt([
@@ -210,6 +212,7 @@ function addRole() {
     });
 }
 
+// Update role query
 function updateRole() {
   inquirer
     .prompt([
@@ -237,6 +240,7 @@ function updateRole() {
     });
 }
 
+// End
 function quit() {
   console.log("See you next time");
   connection.end();

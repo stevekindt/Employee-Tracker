@@ -211,63 +211,30 @@ function addRole() {
 }
 
 function updateRole() {
-  connection.query("SELECT * FROM employees", function(err, res) {
-    let employeeArray = [];
-    for (var i = 0; i < res.length; i++) {
-      employeeArray.push(res[i].first_name);
-    }
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          message: "Which employee would you like to update?",
-          name: "updateEmployee",
-          choices: employeeArray
-        },
-        {
-          type: "list",
-          message: "What would you like to update?",
-          name: "updateDetail",
-          choices: ["Role", "Manager"]
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "What is the new role ID that you would like to assign?",
+        name: "updateRole"
+      },
+      {
+        type: "input",
+        message:
+          "What is the ID number of the employee that you would like to update?",
+        name: "updateId"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        "UPDATE employees SET role_id = ? WHERE id = ?",
+        [answer.updateRole, answer.updateId],
+        function(err, res) {
+          if (err) throw err;
+          viewEmployees();
         }
-      ])
-      .then(function(answer) {
-        connection.query("SELECT * FROM roles", function(err, resRoles) {
-          let rolesArray = [];
-          for (var i = 0; i < resRoles.length; i++) {
-            rolesArray.push(resRoles[i].title);
-          }
-          inquirer
-            .prompt({
-              type: "list",
-              message: "What is this employee's updated role?",
-              name: "updatedRole",
-              choices: rolesArray
-            })
-            .then(function(roleAnswer) {
-              let roleID;
-              let empID;
-              for (var i = 0; i < res.length; i++) {
-                if (answer.update === res[i].first_name) {
-                  empID = res[i].first_name;
-                }
-              }
-              for (var i = 0; i < resRoles.length; i++) {
-                if (roleAnswer.updatedRole === resRoles[i].title) {
-                  roleID = resRoles[i].id;
-                }
-                connection.query(
-                  "UPDATE employees SET role_id = ? WHERE first_name = ?",
-                  [roleID, empID],
-                  function(err, res) {
-                    mainMenu();
-                  }
-                );
-              }
-            });
-        });
-      });
-  });
+      );
+    });
 }
 
 function quit() {

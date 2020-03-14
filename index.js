@@ -120,6 +120,49 @@ function viewRoles() {
   });
 }
 
+function addEmployee() {
+  connection.query("SELECT * FROM roles", function(err, res) {
+    let rolesArray = [];
+    for (var i = 0; i < res.length; i++) {
+      rolesArray.push(res[i].title);
+    }
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "What is the employee's first name?",
+          name: "firstName"
+        },
+        {
+          type: "input",
+          message: "What is the employee's last name?",
+          name: "lastName"
+        },
+        {
+          type: "list",
+          message: "What is the employee's job title?",
+          name: "newEmpTitle",
+          choices: rolesArray
+        }
+      ])
+      .then(function(answer) {
+        let newEmp;
+        for (var i = 0; i < res.length; i++) {
+          if (answer.newEmpTitle === res[i].title) {
+            newEmp = res[i].id;
+          }
+        }
+        connection.query(
+          "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+          [answer.firstName, answer.lastName, newEmp, null],
+          function(err, res) {
+            mainMenu();
+          }
+        );
+      });
+  });
+}
+
 function addDepartment() {
   connection.query("SELECT * FROM departments", function(err, res) {
     let departmentArray = [];

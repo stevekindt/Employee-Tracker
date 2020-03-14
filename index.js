@@ -134,10 +134,53 @@ function addDepartment() {
           name: "newDept"
         }
       ])
-      .then(function(res) {
+      .then(function(answer) {
         connection.query(
           "INSERT INTO departments (name) VALUES (?)",
-          [res.newDept],
+          [answer.newDept],
+          function(err, res) {
+            mainMenu();
+          }
+        );
+      });
+  });
+}
+
+function addRole() {
+  connection.query("SELECT * FROM departments", function(err, res) {
+    let departmentArray = [];
+    for (var i = 0; i < res.length; i++) {
+      departmentArray.push(res[i].name);
+    }
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "What is title of this new role?",
+          name: "newTitle"
+        },
+        {
+          type: "input",
+          message: "What is salary for this new role?",
+          name: "newSalary"
+        },
+        {
+          type: "list",
+          message: "In which department does this new role belong?",
+          name: "newRoleDept",
+          choices: departmentArray
+        }
+      ])
+      .then(function(answer) {
+        let newRole;
+        for (var i = 0; i < res.length; i++) {
+          if (answer.newRoleDept === res[i].name) {
+            newRole = res[i].id;
+          }
+        }
+        connection.query(
+          "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)",
+          [answer.newTitle, answer.newSalary, newRole],
           function(err, res) {
             mainMenu();
           }
